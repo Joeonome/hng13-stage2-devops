@@ -32,7 +32,7 @@ This setup deploys a Blue/Green Node.js service behind Nginx with automatic fail
    Response should include `X-App-Pool: blue`
 2. Simulate Blue failure:
    ```bash
-   curl -X POST http://localhost:8080/start?mode=error
+   curl -X POST http://localhost:8080/chaos/start?mode=error
    ```
 3. Check failover:
    ```bash
@@ -41,8 +41,10 @@ This setup deploys a Blue/Green Node.js service behind Nginx with automatic fail
    Response should include `X-App-Pool: green`
 4. Restore:
    ```bash
-curl -X POST http://localhost:8080/start?mode=error
-   curl -i http://localhost:8080/version
+curl -X POST http://localhost:8080/chaos/stop
+    ```
+    ```bash
+curl -i http://localhost:8080/version
    ```
    Response should include `X-App-Pool: blue`
 
