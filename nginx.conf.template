@@ -17,10 +17,8 @@ access_log /var/log/nginx/access.log stage3_format;
 error_log /var/log/nginx/error.log warn;
 
 # =================================================
-# Upstream configuration (same as Stage 2)
+# Upstream configuration for Blue/Green deployment
 # =================================================
-
-
 upstream app_backend {
     server app_blue:8081 max_fails=1 fail_timeout=3s;
     server app_green:8082 backup;
@@ -36,7 +34,6 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
-
         # ✅ Forward headers as-is (don’t overwrite)
         proxy_pass_request_headers on;
 
@@ -44,6 +41,9 @@ server {
         proxy_send_timeout 5s;
         proxy_read_timeout 5s;
         proxy_next_upstream error timeout http_500 http_502 http_503 http_504;
+    }
 
+    location /fail {
+	return 500 "Simulated server error";
     }
 }
