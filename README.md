@@ -10,7 +10,7 @@ This setup deploys a **Blue/Green Node.js service** behind **Nginx** with automa
 ### 🌐 Server Details
 | Component | Description | Port |
 |------------|--------------|------|
-| **Server IP** | `30.40.4.4` | — |
+| **Server IP** | `<your_server_ip>` | — |
 | **Nginx Gateway** | Public entrypoint | `8080` |
 | **Blue App** | Primary (active) | `8081` |
 | **Green App** | Backup (standby) | `8082` |
@@ -46,7 +46,7 @@ This setup deploys a **Blue/Green Node.js service** behind **Nginx** with automa
 
 #### ✅ Step 1: Confirm Blue is active
 ```bash
-curl -i http://localhost:8080/version
+curl -i http://<your_server_ip>:8080/version
 ```
 Response should include:
 ```
@@ -55,12 +55,12 @@ X-App-Pool: blue
 
 #### ⚠️ Step 2: Simulate Blue failure
 ```bash
-curl -X POST http://localhost:8081/chaos/start?mode=error
+curl -X POST http://<your_server_ip>:8081/chaos/start?mode=error
 ```
 
 #### 🔁 Step 3: Check failover
 ```bash
-curl -i http://localhost:8080/version
+curl -i http://<your_server_ip>:8080/version
 ```
 Response should now include:
 ```
@@ -69,8 +69,8 @@ X-App-Pool: green
 
 #### 🔄 Step 4: Restore Blue
 ```bash
-curl -X POST http://localhost:8081/chaos/stop
-curl -i http://localhost:8080/version
+curl -X POST http://<your_server_ip>:8081/chaos/stop
+curl -i http://<your_server_ip>:8080/version
 ```
 Response should again include:
 ```
@@ -93,7 +93,7 @@ X-App-Pool: blue
 
 1. **Copy project files to your server**
    ```bash
-   scp -r ./Hng13-stage2-devops ubuntu@30.40.4.4:/home/ubuntu/
+   scp -r ./Hng13-stage2-devops ubuntu@<your_server_ip>:/home/ubuntu/
    ```
 
 2. **SSH into your EC2 instance**
@@ -113,9 +113,9 @@ X-App-Pool: blue
    ```
 
 5. **Access your services**
-   - Gateway → http://30.40.4.4:8080/version  
-   - Blue App → http://30.40.4.4:8081/version  
-   - Green App → http://30.40.4.4:8082/version  
+   - Gateway → http://<your_server_ip>:8080/version  
+   - Blue App → http://<your_server_ip>:8081/version  
+   - Green App → http://<your_server_ip>:8082/version  
 
 ---
 
@@ -127,9 +127,9 @@ X-App-Pool: blue
   docker exec -it nginx_gateway nginx -s reload
   ```
 - Exposed URLs:
-  - Gateway: [http://30.40.4.4:8080](http://30.40.4.4:8080)
-  - Blue App: [http://30.40.4.4:8081](http://30.40.4.4:8081)
-  - Green App: [http://30.40.4.4:8082](http://30.40.4.4:8082)
+  - Gateway: [http://<your_server_ip>:8080](http://<your_server_ip>:8080)
+  - Blue App: [http://<your_server_ip>:8081](http://<your_server_ip>:8081)
+  - Green App: [http://<your_server_ip>:8082](http://<your_server_ip>:8082)
 
 ---
 
