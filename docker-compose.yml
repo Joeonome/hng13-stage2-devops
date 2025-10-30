@@ -53,14 +53,18 @@ services:
       - "8082:8082"
 
   # ✅ NEW: Log watcher service for Stage 3
-  alert_watcher:
-    build:
-      context: ./watcher     # watcher.py + requirements.txt live here
+    alert_watcher:
+    image: python:3.11-slim
     container_name: alert_watcher
     networks:
       - app_network
     volumes:
-      - nginx_logs:/var/log/nginx   # shared volume to read Nginx logs
-    env_file:
-      - .env
-    restart: unless-stopped
+      - ./watcher.py:/app/watcher.py:ro
+      - ./nginx_logs:/var/log/nginx
+    working_dir: /app
+    environment:
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - ERROR_RATE_THRESHOLD=${ERROR_RATE_THRESHOLD}
+      - WINDOW_SIZE=${WINDOW_SIZE}
+      - ALERT_COOLDOWN_SEC=${ALERT_COOLDOWN_SEC}
+    command: ["python", "watcher.py"]
