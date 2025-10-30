@@ -59,13 +59,13 @@ services:
     networks:
       - app_network
     volumes:
-      - ./watcher/watcher.py:/app/watcher.py:ro
-      - ./nginx_logs:/var/log/nginx
+      - /home/ubuntu/watcher/watcher.py:/app/watcher.py:ro   # ✅ Correct absolute path
+      - nginx_logs:/var/log/nginx                            # ✅ Use named volume, not ./nginx_logs
     working_dir: /app
     environment:
       - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
       - ERROR_RATE_THRESHOLD=${ERROR_RATE_THRESHOLD}
       - WINDOW_SIZE=${WINDOW_SIZE}
       - ALERT_COOLDOWN_SEC=${ALERT_COOLDOWN_SEC}
-    command: ["python", "/app/watcher/watcher.py"]
+    command: ["python", "/app/watcher.py"]
 
