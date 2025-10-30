@@ -1,9 +1,11 @@
 version: "3.8"
 
-
 networks:
   app_network:
     driver: bridge
+
+volumes:
+  nginx_logs:   # ✅ Shared volume for Nginx <-> watcher
 
 services:
   nginx:
@@ -17,6 +19,7 @@ services:
       - "8080:80"
     volumes:
       - ./nginx.conf.template:/etc/nginx/templates/nginx.conf.template:ro
+      - nginx_logs:/var/log/nginx     # ✅ shared log volume for watcher
     command: >
       /bin/sh -c "envsubst '$$ACTIVE_POOL' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/conf.d/default.conf &&
       nginx -g 'daemon off;'"
@@ -35,7 +38,6 @@ services:
     ports:
       - "8081:8081"
 
-
   green:
     image: ${GREEN_IMAGE}
     container_name: app_green
@@ -49,3 +51,16 @@ services:
       - "8082"
     ports:
       - "8082:8082"
+
+  # ✅ NEW: Log watcher service for Stage 3
+  alert_watcher:
+    build:
+      context: ./watcher     # watcher.py + requirements.txt live here
+    container_name: alert_watcher
+    networks:
+      - app_network
+    volumes:
+      - nginx_logs:/var/log/nginx   # shared volume to read Nginx logs
+    env_file:
+      - .env
+    restart: unless-stopped
