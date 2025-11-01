@@ -52,7 +52,7 @@ docker exec -it watcher python3 watcher.py
 
 #### ✅ Step 1: Confirm Blue is active
 ```bash
-curl -i http://<your_server_ip>:8080/version
+curl -I http://localhost:8080/version
 ```
 Response should include:
 ```
@@ -61,12 +61,12 @@ X-App-Pool: blue
 
 #### ⚠️ Step 2: Simulate Blue failure
 ```bash
-curl -X POST http://<your_server_ip>:8081/chaos/start?mode=error
+curl -X POST http://localhost:8081/chaos/start?mode=error
 ```
 
 #### 🔁 Step 3: Check failover
 ```bash
-curl -i http://<your_server_ip>:8080/version
+curl -I http://localhost:8080/version
 ```
 Response should now include:
 ```
@@ -75,14 +75,14 @@ X-App-Pool: green
 
 #### 🔥 Step 4: Trigger high error rate alert
 ```bash
-for i in $(seq 1 20); do curl -s -o /dev/null -w "%{http_code}\n" http://<your_server_ip>:8081/fail; sleep 0.2; done
+for i in $(seq 1 20); do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8081/version; sleep 0.2; done
 ```
 - Check Slack channel for high error rate alert message.
 
 #### 🔄 Step 5: Restore Blue
 ```bash
-curl -X POST http://<your_server_ip>:8081/chaos/stop
-curl -i http://<your_server_ip>:8080/version
+curl -X POST http://<localhost:8081/chaos/stop
+curl -I http://localhost:8080/version
 ```
 Response should again include:
 ```
@@ -131,9 +131,9 @@ docker ps
 ```
 
 6. **Access your services**
-- Gateway → http://<your_server_ip>:8080/version  
-- Blue App → http://<your_server_ip>:8081/version  
-- Green App → http://<your_server_ip>:8082/version  
+- Gateway → http://localhost:8080/version  
+- Blue App → http://localhost:8081/version  
+- Green App → http://localhost:8082/version  
 
 ---
 
@@ -146,9 +146,9 @@ docker ps
 docker exec -it nginx_gateway nginx -s reload
 ```
 - Exposed URLs:
-  - Gateway: [http://<your_server_ip>:8080](http://<your_server_ip>:8080)
-  - Blue App: [http://<your_server_ip>:8081](http://<your_server_ip>:8081)
-  - Green App: [http://<your_server_ip>:8082](http://<your_server_ip>:8082)
+  - Gateway: [http://localhost:8080](http://localhost:8080)
+  - Blue App: [http://localhost:8081](http://localhost:8081)
+  - Green App: [http://localhost:8082](http://localhost:8082)
 
 ---
 

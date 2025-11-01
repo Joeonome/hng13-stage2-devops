@@ -35,7 +35,8 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
 
         # ✅ Forward headers as-is (don’t overwrite)
-        proxy_pass_request_headers on;
+        # Removed invalid directive `proxy_pass_request_headers on;`
+        # (Nginx would fail to start otherwise)
 
         proxy_connect_timeout 2s;
         proxy_send_timeout 5s;
@@ -43,7 +44,8 @@ server {
         proxy_next_upstream error timeout http_500 http_502 http_503 http_504;
     }
 
-    location /fail {
-	return 500 "Simulated server error";
+    location /health {
+        proxy_pass http://app_backend;
+        add_header X-App-Pool $upstream_addr;
     }
 }

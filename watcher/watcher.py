@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
-import os
+import os, sys
 import time
 import requests
 import logging
 from collections import deque
+
+
+os.environ["PYTHONUNBUFFERED"] = "1"
+sys.stdout.reconfigure(line_buffering=True)
+
+
+
+
 
 # ==============================
 # 🔧 Configuration
@@ -12,7 +20,7 @@ SLACK_WEBHOOK_URL = os.getenv('SLACK_WEBHOOK_URL')
 ERROR_RATE_THRESHOLD = float(os.getenv('ERROR_RATE_THRESHOLD', 2.0))
 WINDOW_SIZE = int(os.getenv('WINDOW_SIZE', 200))
 ALERT_COOLDOWN_SEC = int(os.getenv('ALERT_COOLDOWN_SEC', 300))
-NGINX_TARGET = os.getenv('NGINX_TARGET', 'http://nginx:80/version')
+NGINX_TARGET = os.getenv('NGINX_TARGET', 'http://nginx_gateway:80/health')
 
 # ==============================
 # 🧠 State
@@ -61,16 +69,16 @@ def send_slack_alert(message, alert_type="failover", error_rate=None, window_siz
         title = ":fire: High Error Rate Detected!"
         fields = [
             {"title": "⚠️ Status", 
-             "value": f"*{error_rate:.1f}%* errors ❌ (limit: {ERROR_RATE_THRESHOLD:.1f}%)", 
-             "short": False},
+            "value": f"*{error_rate:.1f}%* errors ❌ (limit: {ERROR_RATE_THRESHOLD:.1f}%)", 
+            "short": False},
             {"title": "⏰ Checked At", 
-             "value": f"*{time.strftime('%Y-%m-%d %H:%M:%S')}*", 
-             "short": True},
+            "value": f"*{time.strftime('%Y-%m-%d %H:%M:%S')}*", 
+            "short": True},
             {"title": "Current Pool", "value": f"*{current_pool}*", "short": True},
             {"title": "Requests Monitored", "value": f"*{request_count}*", "short": True},
             {"title": "💡 Recommended Action", 
-             "value": "_Inspect upstream logs or consider switching pools_", 
-             "short": False}
+            "value": "_Inspect upstream logs or consider switching pools_", 
+            "short": False}
         ]
 
     payload = {
