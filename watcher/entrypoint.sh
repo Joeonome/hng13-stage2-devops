@@ -1,6 +1,6 @@
 #!/bin/sh
 echo "Installing dependencies..."
-pip install -r /app/requirements.txt
+pip install -r /app/watcher/requirements.txt
 
 echo "Waiting for Nginx logs to be ready..."
 while [ ! -f /var/log/nginx/access.log ]; do
@@ -9,4 +9,4 @@ while [ ! -f /var/log/nginx/access.log ]; do
 done
 
 echo "Starting watcher..."
-python /app/watcher.py
+python /app/watcher/watcher.py
